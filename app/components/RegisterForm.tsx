@@ -34,8 +34,8 @@ export default function RegisterForm({ onSubmit, onClose }: RegisterFormProps) {
 
     if (!password) {
       newErrors.password = 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must contain at least 6 characters';
+    } else if (password.length < 3) {
+      newErrors.password = 'Password must contain at least 3 characters';
     }
 
     if (!repeatPassword) {
@@ -95,7 +95,7 @@ export default function RegisterForm({ onSubmit, onClose }: RegisterFormProps) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full px-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-          placeholder="Enter password (minimum 6 characters)"
+          placeholder="Enter password (minimum 3 characters)"
         />
         {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
       </div>

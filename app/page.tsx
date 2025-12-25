@@ -6,6 +6,8 @@ import LoginForm from './components/LoginForm';
 import RegisterForm from './components/RegisterForm';
 import WelcomeSection from './components/WelcomeSection';
 import LoadingSpinner from './components/LoadingSpinner';
+import TaskManager from './components/TaskManager';
+import Header from './components/Header';
 import { authService, User } from './services/auth';
 
 export default function Home() {
@@ -67,36 +69,10 @@ export default function Home() {
   if (isAuthenticated && user) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <header className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <h1 className="text-xl font-semibold text-gray-900">
-                Task Tracker
-              </h1>
-              <div className="flex items-center gap-4">
-                <span className="text-gray-600">
-                  Hello, {user.email}!
-                </span>
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition duration-200"
-                >
-                  Logout
-                </button>
-              </div>
-            </div>
-          </div>
-        </header>
-
+        <Header user={user} onLogout={handleLogout} />
+        
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Your Tasks
-            </h2>
-            <p className="text-gray-600">
-              Your task list will be here. Functionality will be added in future iterations.
-            </p>
-          </div>
+          <TaskManager />
         </main>
       </div>
     );
