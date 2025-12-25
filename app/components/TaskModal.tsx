@@ -82,7 +82,7 @@ export default function TaskModal({
   };
 
   const handleDelete = async () => {
-    if (isDeleting || !confirm('Are you sure you want to delete this task?')) return;
+    if (isDeleting) return;
     
     setIsDeleting(true);
     try {
