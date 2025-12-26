@@ -30,19 +30,12 @@ class AuthService {
     };
   }
 
-  async signUp(data: SignUpRequest): Promise<AuthResponse> {
-    const response = await fetch(`${AUTH_URL}/sign-up`, {
+  async signUp(data: SignUpRequest): Promise<Response> {
+    return await fetch(`${AUTH_URL}/sign-up`, {
       method: 'POST',
       ...this.getRequestOptions(),
       body: JSON.stringify(data),
     });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || 'Registration failed');
-    }
-
-    return response.json();
   }
 
   async signIn(data: SignInRequest): Promise<Response> {

@@ -41,11 +41,10 @@ export default function Home() {
   };
 
   const handleRegister = async (email: string, password: string, repeatPassword: string) => {
-    await authService.signUp({ email, password });
-    
-    const userData = await authService.getCurrentUser();
-    if (userData) {
-      setUser(userData);
+    const response = await authService.signUp({ email, password });
+
+    if (response.ok) {
+      setUser({email});
       setIsAuthenticated(true);
       setIsRegisterModalOpen(false);
     }
