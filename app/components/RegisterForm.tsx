@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface RegisterFormProps {
   onSubmit: (email: string, password: string, repeatPassword: string) => Promise<void>;
@@ -18,6 +18,22 @@ export default function RegisterForm({ onSubmit, onClose }: RegisterFormProps) {
     general?: string;
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [showPasswordMismatch, setShowPasswordMismatch] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
+  const [repeatPasswordTouched, setRepeatPasswordTouched] = useState(false);
+
+  useEffect(() => {
+    if (password && repeatPassword) {
+      const match = password === repeatPassword;
+      setPasswordsMatch(match);
+      // Only show mismatch if both fields have been touched
+      setShowPasswordMismatch(!match && passwordTouched && repeatPasswordTouched);
+    } else {
+      setPasswordsMatch(true);
+      setShowPasswordMismatch(false);
+    }
+  }, [password, repeatPassword, passwordTouched, repeatPasswordTouched]);
 
   const validateForm = () => {
     const newErrors: { 
@@ -46,6 +62,24 @@ export default function RegisterForm({ onSubmit, onClose }: RegisterFormProps) {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  // Check if form is valid for submission
+  const isFormValid = () => {
+    return email && 
+           password && 
+           repeatPassword && 
+           passwordsMatch && 
+           email.includes('@') && 
+           password.length >= 3;
+  };
+
+  const handlePasswordBlur = () => {
+    setPasswordTouched(true);
+  };
+
+  const handleRepeatPasswordBlur = () => {
+    setRepeatPasswordTouched(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -94,7 +128,12 @@ export default function RegisterForm({ onSubmit, onClose }: RegisterFormProps) {
           id="register-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          onBlur={handlePasswordBlur}
+          className={`w-full px-4 py-3 text-base border rounded-md focus:outline-none focus:ring-2 focus:border-transparent ${
+            showPasswordMismatch && password
+              ? 'border-red-500 focus:ring-red-500'
+              : 'border-gray-300 focus:ring-green-500'
+          }`}
           placeholder="Enter password (minimum 3 characters)"
         />
         {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
@@ -109,16 +148,26 @@ export default function RegisterForm({ onSubmit, onClose }: RegisterFormProps) {
           id="repeat-password"
           value={repeatPassword}
           onChange={(e) => setRepeatPassword(e.target.value)}
-          className="w-full px-4 py-3 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+          onBlur={handleRepeatPasswordBlur}
+          className={`w-full px-4 py-3 text-base border rounded-md focus:outline-none focus:ring-2 focus:border-transparent ${
+            showPasswordMismatch && repeatPassword
+              ? 'border-red-500 focus:ring-red-500'
+              : 'border-gray-300 focus:ring-green-500'
+          }`}
           placeholder="Repeat password"
         />
-        {errors.repeatPassword && <p className="text-red-500 text-sm mt-1">{errors.repeatPassword}</p>}
+        <div className="min-h-[20px]">
+          {errors.repeatPassword && <p className="text-red-500 text-sm mt-1">{errors.repeatPassword}</p>}
+          {showPasswordMismatch && password && repeatPassword && (
+            <p className="text-red-500 text-sm mt-1">Passwords do not match</p>
+          )}
+        </div>
       </div>
 
       <div className="flex gap-4 pt-6">
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (passwordTouched && repeatPasswordTouched && !passwordsMatch)}
           className="flex-1 bg-green-600 text-white py-3 px-6 text-base font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? (
